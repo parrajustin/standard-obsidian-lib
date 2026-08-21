@@ -1,0 +1,69 @@
+# standard-obsidian-lib — shared Obsidian plugin utilities.
+#
+# Consumed by the Obsidian plugins through pnpm `file:` specifiers that
+# resolve to the `pkg` npm_package target below (no repo symlinks). Like
+# standard-ts-lib it ships raw TypeScript (deep imports such as
+# `standard-obsidian-lib/src/filesystem/file_util`), so the npm package is
+# just package.json + src.
+
+load("@aspect_rules_jest//jest:defs.bzl", "jest_test")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@npm_standard_obsidian_lib//:defs.bzl", "npm_link_all_packages")
+load("@npm_standard_obsidian_lib//common/standard-obsidian-lib:typescript/package_json.bzl", typescript_bin = "bin")
+
+exports_files([
+    "package.json",
+    "pnpm-lock.yaml",
+])
+
+# Links every npm dependency from the pnpm lockfile as :node_modules/<pkg>.
+npm_link_all_packages(name = "node_modules")
+
+# Raw sources, for consumers that resolve `standard-obsidian-lib/*` by
+# workspace path (jest/tsconfig path mappings).
+js_library(
+    name = "srcs",
+    srcs = ["package.json"] + glob(["src/**/*.ts"]),
+    visibility = ["//visibility:public"],
+)
+
+# Named `pkg` because that is the target name npm_translate_lock generates
+# references to for `file:` directory dependencies.
+npm_package(
+    name = "pkg",
+    srcs = ["package.json"] + glob(["src/**/*.ts"]),
+    package = "standard-obsidian-lib",
+    visibility = ["//visibility:public"],
+)
+
+# `npm test` — jest over the src/**/*.test.ts suites (ts-jest transform).
+jest_test(
+    name = "test",
+    size = "medium",
+    config = "jest.config.cjs",
+    data = glob(["src/**/*.ts"]) + [
+        "package.json",
+        "tsconfig.json",
+        ":node_modules",
+    ],
+    node_modules = ":node_modules",
+)
+
+# `npm run build` is plain `tsc`; under Bazel the useful gate is the type
+# check itself (the library ships raw TS, nothing consumes the emit).
+typescript_bin.tsc_test(
+    name = "type_check",
+    args = [
+        "--noEmit",
+        "-p",
+        "tsconfig.json",
+    ],
+    chdir = package_name(),
+    data = glob(["src/**/*.ts"]) + [
+        "jest.config.cjs",
+        "package.json",
+        "tsconfig.json",
+        ":node_modules",
+    ],
+)

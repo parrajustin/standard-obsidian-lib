@@ -5,7 +5,7 @@
 import { normalizePath, FileSystemAdapter, type App, type DataWriteOptions } from "obsidian";
 import type { Result, StatusResult } from "standard-ts-lib/src/result";
 import { Ok } from "standard-ts-lib/src/result";
-import { ErrorCode, type StatusError } from "standard-ts-lib/src/status_error";
+import type { StatusError } from "standard-ts-lib/src/status_error";
 import { WrapPromise } from "standard-ts-lib/src/wrap_promise";
 import { InjectMeta } from "standard-ts-lib/src/status_util/inject_status_msg";
 import { PromiseResultSpanError } from "../decorators/result_span.decorator";

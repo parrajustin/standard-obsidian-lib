@@ -164,7 +164,7 @@ export class SchemaManager<Schemas extends VersionedSchema<any, any>[], MaxVersi
         if (version >= this._converters.length) {
             return Ok(data as Schemas[MaxVersion]);
         }
-        const converter = this._converters[version] as ConverterFunc<any, any>;
+        const converter = this._converters[version] as unknown as ConverterFunc<any, any>;
         const newData = converter(data) as Result<AnyValueInTuple<Schemas>, StatusError>;
         if (newData.err) {
             return newData;

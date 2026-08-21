@@ -3,9 +3,12 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type { Config } from "jest";
+// Converted from jest.config.ts so the config is loadable both by plain
+// `npx jest` and by Bazel's jest_test (which requires a .js/.cjs/.mjs/.json
+// config).
+/** @type {import('jest').Config} */
 
-const config: Config = {
+const config = {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -177,7 +180,6 @@ const config: Config = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     "^.+.tsx?$": ["ts-jest", {}]
   },
 
@@ -200,4 +202,4 @@ const config: Config = {
   // watchman: true,
 };
 
-export default config;
+module.exports = config;

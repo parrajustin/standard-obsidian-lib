@@ -37,7 +37,6 @@
         "src/**/*.ts",
         "tests/**/*.ts",
         "docs/**/*",
-        "jest.config.ts",
         "util/update_firestore_rules.ts"
     ]
 }
